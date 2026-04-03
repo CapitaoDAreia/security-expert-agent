@@ -11,9 +11,13 @@ venv.bak/
 __pycache__/
 *.py[cod]
 *$py.class
+.DS_Store
 
 # Distribution / packaging
 dist/
 build/
 *.egg-info/
 *.egg
+
+# Folders
+db
