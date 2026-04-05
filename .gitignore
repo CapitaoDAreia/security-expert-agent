@@ -22,3 +22,6 @@ build/
 
 # Folders
 db
+
+# Others
+PLAN.MD
