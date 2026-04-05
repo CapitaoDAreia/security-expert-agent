@@ -1,11 +1,15 @@
 from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage
-from ..config.config import LLM_MODEL
+from ..config.config import LLM_MODEL, OLLAMA_BASE_URL
 
 class CISOExpert:
     def __init__(self, vector_store):
-        self.llm = ChatOllama(model=LLM_MODEL, temperature=0.1)
+        self.llm = ChatOllama(
+            model=LLM_MODEL,
+            temperature=0.1,
+            base_url=OLLAMA_BASE_URL
+        )
         self.vector_store = vector_store
         self.chat_history = []
 

@@ -10,9 +10,10 @@ dependencies = [
     "langchain-chroma>=0.2.6",
     "langchain-community>=0.3.31",
     "langchain-ollama>=0.3.10",
-    "pgvector>=0.4.2",
+    "langchain-postgres>=0.0.17",
     "psycopg2-binary>=2.9.11",
     "pypdf>=6.9.2",
+    "python-dotenv>=1.2.1",
     "python-multipart>=0.0.20",
     "uvicorn>=0.39.0",
 ]
