@@ -1,5 +1,4 @@
 import streamlit as st
-import requests
 import time
 from src.agent.brain import CISOExpert
 from src.database.storage import VectorStoreManager

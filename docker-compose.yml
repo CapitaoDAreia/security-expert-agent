@@ -32,19 +32,6 @@ services:
         condition: service_healthy
     command: uv run uvicorn src.api.api_ingest:app --host 0.0.0.0 --port 8001
 
-  ciso-agent:
-    build: .
-    container_name: ciso-agent-cli
-    env_file: .env
-    stdin_open: true # Allows terminal
-    tty: true        # Allows terminal
-    environment:
-      - PG_HOST=db
-    depends_on:
-      db:
-        condition: service_healthy
-    command: uv run python -m src.main
-
   ciso-gui:
     build: .
     container_name: ciso-web-gui
