@@ -15,5 +15,6 @@ dependencies = [
     "pypdf>=6.9.2",
     "python-dotenv>=1.2.1",
     "python-multipart>=0.0.20",
+    "streamlit>=1.50.0",
     "uvicorn>=0.39.0",
 ]
