@@ -18,7 +18,7 @@ The ecosystem:
 *   **Database:** PostgreSQL 16 + `pgvector`.
 *   **Orchestration:** Docker Compose.
 *   **API:** FastAPI.
-*   **GUI:** Streamlit (coming soon).
+*   **GUI:** Streamlit.
 
 ## 🏁 Getting Started (Local Setup)
 
@@ -58,22 +58,82 @@ Send your security policies, OWASP docs, or compliance PDFs to the Ingestor:
 curl -X POST "http://localhost:8001/ingest" -F "file=@./your-document.pdf"
 ```
 
-### Step 2: Chatting with the CISO
-Attach to the agent's CLI to start the consultation:
-```bash
-docker attach ciso-agent-cli
-```
-Ask anything! The agent will search the PostgreSQL database and cite its sources.
+*Note*: The API will shred the PDF, generate embeddings, and store them in the PostgreSQL vector brain.
+
+### Step 2: Chatting with the Agent
+Open your browser and navigate to the Interactive Web GUI:
+* URL: http://localhost:8501
+
+#### Features available in the GUI:
+* 💬 **Real-time Chat**: Ask questions about the ingested security documents.
+* 📚 **Source Transparency**: View exactly which document chunks were used to generate each answer.
 
 ## 🛡️ Why This Matters
 *   **No Hallucinations:** The agent is grounded in the documents you provide. If it's not in the DB, it won't invent it.
 *   **Cost Efficient:** Zero API costs. It runs on your hardware (Optimized for Apple Silicon/M4).
 
-## 🏗️ Roadmap
-- [x] Persistent Vector Storage (PostgreSQL).
-- [x] Containerized Microservices.
-- [ ] Interactive Web GUI (Streamlit).
-- [ ] Multi-document support & Session Management.
+## 🏗️ System Architecture
+The project follows a decoupled RAG (Retrieval-Augmented Generation) architecture, separating data ingestion from the conversational agent.
 
+### High-Level Flow Diagram
+```mermaid
+    graph TD
+    %% Entities
+    User((User))
+    Admin((Admin))
+    OllamaHost[Ollama Server - LLM & Embeddings]
+
+    subgraph Docker_Compose_Network [Ecosystem]
+        direction TB
+
+        subgraph Ingestion_Service [Service: ingest-api]
+            FastAPI_Ingest[FastAPI App - Port 8001]
+            Process_Logic[LangChain Loader and Splitter]
+        end
+
+        subgraph Postgres_Service [Service: db]
+            Postgres[(PostgreSQL 16 + pgvector)]
+            Data_Volume[[Volume: postgres_data]]
+        end
+
+        subgraph Web_GUI_Service [Service: ciso-gui]
+            Streamlit_App[Streamlit App - Port 8501]
+            AGENT_Logic[Agent Brain and Query Rewriter]
+        end
+    end
+
+    %% Ingestion Flow
+    Admin -->|1. Upload PDF| FastAPI_Ingest
+    FastAPI_Ingest --> Process_Logic
+    Process_Logic <-->|2. Generate Embeddings| OllamaHost
+    Process_Logic -->|3. Store Vectors| Postgres
+    Postgres --- Data_Volume
+
+    %% Chat Flow
+    User -->|A. Ask Question| Streamlit_App
+    Streamlit_App --> AGENT_Logic
+    AGENT_Logic <-->|B. Contextualize and Generate| OllamaHost
+    AGENT_Logic <-->|C. Vector Search| Postgres
+    Streamlit_App -->|D. View Response and Logs| User
+
+    %% Styling
+    style User fill:#990000,stroke:#333,stroke-width:2px
+    style Admin fill:#990000,stroke:#333,stroke-width:2px
+    style OllamaHost fill:#8e44ad,stroke:#fff,stroke-width:2px,color:#fff
+    style Postgres fill:#0055cc,stroke:#fff,stroke-width:2px,color:#fff
+    style FastAPI_Ingest fill:#238636,stroke:#fff,color:#fff
+    style Streamlit_App fill:#238636,stroke:#fff,color:#fff
+```
+    
+## 🏗️ Roadmap
+- [x] **Persistent Vector Storage**: PostgreSQL with pgvector for high-performance retrieval.
+- [x] **Containerized Microservices**: Fully dockerized environment for easy deployment.
+- [x] **Interactive Web GUI**: Streamlit dashboard with real-time retrieval logs.
+- [ ] **Session Management**: Persistent chat history and user context.
+- [ ] **Service Decoupling**: Independent scaling for Embedding and LLM engines.
+- [ ] **Advanced RAG**: Implementation of Re-ranking and Query Expansion for higher precision.
+- [ ] **Observability & Evaluation**: Automated metrics to measure faithfulness and relevancy.
+- [ ] **Enterprise Security**: JWT Authentication and Role-Based Access Control (RBAC).
+    
 ---
 Alive and kicking! 👊 hehehehe
